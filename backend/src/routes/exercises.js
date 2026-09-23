@@ -21,7 +21,6 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Check if exercise already exists for this user
     const existingExercise = await Exercise.findOne({
       user: req.userId,
       name: name.trim()
@@ -44,8 +43,7 @@ router.post("/", async (req, res) => {
 
   } catch (err) {
     console.error("CREATE EXERCISE ERROR:", err);
-
-    // MongoDB duplicate key error
+    
     if (err.code === 11000) {
       return res.status(409).json({
         message: "Exercise already exists"
