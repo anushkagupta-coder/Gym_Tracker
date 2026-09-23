@@ -14,26 +14,51 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { name, muscleGroup, equipment } = req.body;
+
     if (!name || !muscleGroup || !equipment) {
-      return res.status(400).json({ message: "All exercise fields are required" });
+      return res.status(400).json({
+        message: "All exercise fields are required"
+      });
+    }
+
+    // Check if exercise already exists for this user
+    const existingExercise = await Exercise.findOne({
+      user: req.userId,
+      name: name.trim()
+    });
+
+    if (existingExercise) {
+      return res.status(409).json({
+        message: "Exercise already exists"
+      });
     }
 
     const exercise = await Exercise.create({
-      name,
+      name: name.trim(),
       muscleGroup,
       equipment,
       user: req.userId
     });
 
     res.status(201).json(exercise);
-  } catch (err){
+
+  } catch (err) {
     console.error("CREATE EXERCISE ERROR:", err);
+
+    // MongoDB duplicate key error
+    if (err.code === 11000) {
+      return res.status(409).json({
+        message: "Exercise already exists"
+      });
+    }
+
     res.status(500).json({
-    message: "Could not create exercise",
-    error: err.message
-  });
+      message: "Could not create exercise"
+    });
   }
 });
+
+
 
 router.put("/:id", async (req, res) => {
   try {
