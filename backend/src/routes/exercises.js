@@ -26,8 +26,12 @@ router.post("/", async (req, res) => {
     });
 
     res.status(201).json(exercise);
-  } catch {
-    res.status(500).json({ message: "Could not create exercise" });
+  } catch (err){
+    console.error("CREATE EXERCISE ERROR:", err);
+    res.status(500).json({
+    message: "Could not create exercise",
+    error: err.message
+  });
   }
 });
 
