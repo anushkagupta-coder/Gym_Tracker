@@ -31,7 +31,6 @@ router.post("/", async (req, res) => {
         message: "Exercise already exists"
       });
     }
-
     const exercise = await Exercise.create({
       name: name.trim(),
       muscleGroup,
